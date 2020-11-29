@@ -97,7 +97,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(13);
 /* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(33);
 /* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(62);
-/* harmony import */ var _App__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(70);
+/* harmony import */ var _App__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(71);
 
 
 
@@ -37925,7 +37925,11 @@ thunk.withExtraArgument = createThunkMiddleware;
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setFood", function() { return setFood; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setFoods", function() { return setFoods; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setCategories", function() { return setCategories; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setCheckedCategories", function() { return setCheckedCategories; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "clearCheckedCategories", function() { return clearCheckedCategories; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "loadFoodData", function() { return loadFoodData; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "loadCategoryData", function() { return loadCategoryData; });
 /* harmony import */ var _reduxjs_toolkit__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(63);
 /* harmony import */ var _services_api__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(68);
 
@@ -37937,7 +37941,9 @@ const {
   name: 'application',
   initialState: {
     food: null,
-    foods: []
+    foods: [],
+    categories: [],
+    checkedCategories: []
   },
   reducers: {
     setFood(state, {
@@ -37954,19 +37960,66 @@ const {
       return { ...state,
         foods
       };
+    },
+
+    setCategories(state, {
+      payload: categories
+    }) {
+      return { ...state,
+        categories
+      };
+    },
+
+    setCheckedCategories(state, {
+      payload: newCheckedCategory
+    }) {
+      const {
+        checkedCategories
+      } = state;
+      const isExistIndex = checkedCategories.findIndex(({
+        id
+      }) => id === newCheckedCategory.id);
+
+      if (isExistIndex >= 0) {
+        const copyCheckedCategories = [...checkedCategories];
+        copyCheckedCategories.splice(isExistIndex, 1);
+        return { ...state,
+          checkedCategories: copyCheckedCategories
+        };
+      }
+
+      return { ...state,
+        checkedCategories: [...checkedCategories, newCheckedCategory]
+      };
+    },
+
+    clearCheckedCategories(state) {
+      return { ...state,
+        checkedCategories: []
+      };
     }
 
   }
 });
 const {
   setFood,
-  setFoods
+  setFoods,
+  setCategories,
+  setCheckedCategories,
+  clearCheckedCategories
 } = actions;
 function loadFoodData() {
   return async dispatch => {
     dispatch(setFoods([]));
     const foods = await Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["fetchFoods"])();
     dispatch(setFoods(foods));
+  };
+}
+function loadCategoryData() {
+  return async dispatch => {
+    dispatch(setCategories([]));
+    const categories = await Object(_services_api__WEBPACK_IMPORTED_MODULE_1__["fetchCategories"])();
+    dispatch(setCategories(categories));
   };
 }
 /* harmony default export */ __webpack_exports__["default"] = (reducer);
@@ -37978,15 +38031,20 @@ function loadFoodData() {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fetchFoods", function() { return fetchFoods; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fetchDummy", function() { return fetchDummy; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fetchCategories", function() { return fetchCategories; });
 /* harmony import */ var _fixtures_foods__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(69);
+/* harmony import */ var _fixtures_categories__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(70);
+
 
 async function fetchFoods() {
   // TODO: fecth foods data from JSON Server.
   const data = await _fixtures_foods__WEBPACK_IMPORTED_MODULE_0__["default"];
   return data;
 }
-async function fetchDummy() {// TODO: Delete this!
+async function fetchCategories() {
+  // TODO: fecth foods data from JSON Server.
+  const data = await _fixtures_categories__WEBPACK_IMPORTED_MODULE_1__["default"];
+  return data;
 }
 
 /***/ }),
@@ -37996,85 +38054,404 @@ async function fetchDummy() {// TODO: Delete this!
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 const foods = [{
-  id: 1,
-  category: '중식',
-  name: '짜장면'
-}, {
-  id: 2,
-  category: '중식',
-  name: '짬뽕'
-}, {
-  id: 3,
-  category: '중식',
-  name: '볶음밥'
-}, {
-  id: 4,
-  category: '중식',
-  name: '마파두부덮밥'
-}, {
-  id: 5,
-  category: '중식',
-  name: '류산슬덮밥'
-}, {
-  id: 6,
+  id: 1000,
+  name: '백반',
+  description: '',
   category: '한식',
-  name: '국밥'
+  features: [],
+  dishes: []
 }, {
-  id: 7,
+  id: 1001,
+  name: '김치찌개',
+  description: '',
   category: '한식',
-  name: '국수'
+  features: [],
+  dishes: []
 }, {
-  id: 8,
+  id: 1002,
+  name: '된장찌개',
+  description: '',
   category: '한식',
-  name: '부대찌개'
+  features: [],
+  dishes: []
 }, {
-  id: 9,
+  id: 1003,
+  name: '뚝배기불고기',
+  description: '',
   category: '한식',
-  name: '김치찌개'
+  features: [],
+  dishes: []
 }, {
-  id: 10,
+  id: 1004,
+  name: '해장국',
+  description: '',
   category: '한식',
-  name: '제육덮밥'
+  features: [],
+  dishes: []
 }, {
-  id: 11,
+  id: 1005,
+  name: '순대국',
+  description: '',
+  category: '한식',
+  features: [],
+  dishes: []
+}, {
+  id: 1006,
+  name: '설렁탕',
+  description: '',
+  category: '한식',
+  features: [],
+  dishes: []
+}, {
+  id: 1007,
+  name: '순두부찌개',
+  description: '',
+  category: '한식',
+  features: [],
+  dishes: []
+}, {
+  id: 1008,
+  name: '부대찌개',
+  description: '',
+  category: '한식',
+  features: [],
+  dishes: []
+}, {
+  id: 1009,
+  name: '삼계탕',
+  description: '',
+  category: '한식',
+  features: [],
+  dishes: []
+}, {
+  id: 1010,
+  name: '감자탕',
+  description: '',
+  category: '한식',
+  features: [],
+  dishes: []
+}, {
+  id: 1011,
+  name: '추어탕',
+  description: '',
+  category: '한식',
+  features: [],
+  dishes: []
+}, {
+  id: 1012,
+  name: '제육볶음',
+  description: '',
+  category: '한식',
+  features: [],
+  dishes: []
+}, {
+  id: 1013,
+  name: '보쌈정식',
+  description: '',
+  category: '한식',
+  features: [],
+  dishes: []
+}, {
+  id: 1014,
+  name: '낚지볶음',
+  description: '',
+  category: '한식',
+  features: [],
+  dishes: []
+}, {
+  id: 1015,
+  name: '수제비',
+  description: '',
+  category: '한식',
+  features: [],
+  dishes: []
+}, {
+  id: 1016,
+  name: '전',
+  description: '',
+  category: '한식',
+  features: [],
+  dishes: []
+}, {
+  id: 1017,
+  name: '전',
+  description: '',
+  category: '한식',
+  features: [],
+  dishes: []
+}, {
+  id: 1018,
+  name: '닭갈비',
+  description: '',
+  category: '한식',
+  features: [],
+  dishes: []
+}, {
+  id: 1019,
+  name: '육개장',
+  description: '',
+  category: '한식',
+  features: [],
+  dishes: []
+}, {
+  id: 1020,
+  name: '김치볶음밥',
+  description: '',
+  category: '한식',
+  features: [],
+  dishes: []
+}, {
+  id: 1021,
+  name: '짜장면',
+  description: '',
+  category: '중식',
+  features: [],
+  dishes: []
+}, {
+  id: 1022,
+  name: '짬뽕',
+  description: '',
+  category: '중식',
+  features: [],
+  dishes: []
+}, {
+  id: 1023,
+  name: '잡채밥',
+  description: '',
+  category: '중식',
+  features: [],
+  dishes: []
+}, {
+  id: 1024,
+  name: '새우볶음밥',
+  description: '',
+  category: '중식',
+  features: [],
+  dishes: []
+}, {
+  id: 1025,
+  name: '게살볶음밥',
+  description: '',
+  category: '중식',
+  features: [],
+  dishes: []
+}, {
+  id: 1026,
+  name: '유산슬밥',
+  description: '',
+  category: '중식',
+  features: [],
+  dishes: []
+}, {
+  id: 1027,
+  name: '마파두부밥',
+  description: '',
+  category: '중식',
+  features: [],
+  dishes: []
+}, {
+  id: 1028,
+  name: '송이밥',
+  description: '',
+  category: '중식',
+  features: [],
+  dishes: []
+}, {
+  id: 1029,
+  name: '탕수육',
+  description: '',
+  category: '중식',
+  features: [],
+  dishes: []
+}, {
+  id: 1030,
+  name: '깐풍기',
+  description: '',
+  category: '중식',
+  features: [],
+  dishes: []
+}, {
+  id: 1031,
+  name: '파스타',
+  description: '',
   category: '양식',
-  name: '리조또'
+  features: [],
+  dishes: []
 }, {
-  id: 12,
+  id: 1032,
+  name: '화덕피자',
+  description: '',
   category: '양식',
-  name: '파스타'
+  features: [],
+  dishes: []
 }, {
-  id: 13,
+  id: 1033,
+  name: '리조또',
+  description: '',
   category: '양식',
-  name: '피자'
+  features: [],
+  dishes: []
 }, {
-  id: 14,
+  id: 1034,
+  name: '리조또',
+  description: '',
   category: '양식',
-  name: '스테이크덮밥'
+  features: [],
+  dishes: []
 }, {
-  id: 15,
+  id: 1035,
+  name: '필라프',
+  description: '',
   category: '양식',
-  name: '스프'
+  features: [],
+  dishes: []
 }, {
-  id: 16,
-  category: '일식',
-  name: '라멘'
+  id: 1036,
+  name: '빠에야',
+  description: '',
+  category: '양식',
+  features: [],
+  dishes: []
 }, {
-  id: 17,
-  category: '일식',
-  name: '초밥'
+  id: 1037,
+  name: '감바스',
+  description: '',
+  category: '양식',
+  features: [],
+  dishes: []
 }, {
-  id: 18,
-  category: '일식',
-  name: '규동'
+  id: 1038,
+  name: '똠얌꿍(매운 새우 수프)',
+  description: '',
+  category: '태국식',
+  features: [],
+  dishes: []
 }, {
-  id: 19,
-  category: '일식',
-  name: '규카츠'
+  id: 1039,
+  name: '팟타이(태국식 볶음면)',
+  description: '',
+  category: '태국식',
+  features: [],
+  dishes: []
 }, {
-  id: 20,
-  category: '경양식',
-  name: '돈까스'
+  id: 1040,
+  name: '카오팟(볶음밥)',
+  description: '',
+  category: '태국식',
+  features: [],
+  dishes: []
+}, {
+  id: 1041,
+  name: '팟크라파오무(바질과 돼지고기 볶음)',
+  description: '',
+  category: '태국식',
+  features: [],
+  dishes: []
+}, {
+  id: 1042,
+  name: '깽케우완카이(그린 치킨 카레)',
+  description: '',
+  category: '태국식',
+  features: [],
+  dishes: []
+}, {
+  id: 1043,
+  name: '쌀국수 포(Pho)',
+  description: '베트남의 대표 음식으로 담백하고 든든해서 한끼 식사로 손색이 없다.',
+  category: '베트남식',
+  features: [],
+  dishes: []
+}, {
+  id: 1044,
+  name: '월남쌈(고이꾸온)',
+  description: '라이스페이퍼에 각종 채소를 넣어 다양한 소스에 찍어먹자. 보기에도 좋고 맛도 좋다.',
+  category: '베트남식',
+  features: [],
+  dishes: []
+}, {
+  id: 1045,
+  name: '분짜',
+  description: '쌀국수의 한 종류로 쌀국수면에 숯불에 구운 돼지고기와 야채를 기호대로 넣어서 함께 먹는 음식이다.',
+  category: '베트남식',
+  features: [],
+  dishes: []
+}, {
+  id: 1046,
+  name: '퍼 가(닭국수)',
+  description: '쌀국수의 한 종류로 닭고기 국물에 말아낸 쌀국수로 토핑된 닭의 쫄깃한 식감을 느낄 수 있다.',
+  category: '베트남식',
+  features: [],
+  dishes: []
+}, {
+  id: 1047,
+  name: '껌승(돼지갈비덮밥)',
+  description: '돼지갈비를 얹은 덮밥으로 한국인의 입맛에 아주 잘 맞는 베트남 음식이다.',
+  category: '베트남식',
+  features: [],
+  dishes: []
+}, {
+  id: 1048,
+  name: '햄버거',
+  description: '',
+  category: '패스트푸드',
+  features: [],
+  dishes: []
+}, {
+  id: 1049,
+  name: '샌드위치',
+  description: '',
+  category: '패스트푸드',
+  features: [],
+  dishes: []
+}, {
+  id: 1050,
+  name: '편의점도시락',
+  description: '',
+  category: '패스트푸드',
+  features: [],
+  dishes: []
+}, {
+  id: 1051,
+  name: '김밥',
+  description: '',
+  category: '분식',
+  features: [],
+  dishes: []
+}, {
+  id: 1052,
+  name: '라면',
+  description: '',
+  category: '분식',
+  features: [],
+  dishes: []
+}, {
+  id: 1053,
+  name: '우동',
+  description: '',
+  category: '분식',
+  features: [],
+  dishes: []
+}, {
+  id: 1054,
+  name: '쫄면',
+  description: '',
+  category: '분식',
+  features: [],
+  dishes: []
+}, {
+  id: 1055,
+  name: '떡볶이',
+  description: '',
+  category: '분식',
+  features: [],
+  dishes: []
+}, {
+  id: 1056,
+  name: '순대',
+  description: '',
+  category: '분식',
+  features: [],
+  dishes: []
 }];
 /* harmony default export */ __webpack_exports__["default"] = (foods);
 
@@ -38084,59 +38461,32 @@ const foods = [{
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return App; });
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(13);
-/* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(33);
-/* harmony import */ var _emotion_styled__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(71);
-/* harmony import */ var _HomePage__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(88);
-/* harmony import */ var _FoodPage__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(90);
-/* harmony import */ var _slice__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(67);
-
-
-
-
-
-
-
-const GridLayout = _emotion_styled__WEBPACK_IMPORTED_MODULE_3__["default"].div({
-  display: 'grid',
-  gridTemplateColumns: '1fr minmax(480px, 1fr) 1fr',
-  height: '100%',
-  backgroundColor: 'rgb(193, 226, 242)'
-});
-const Section = _emotion_styled__WEBPACK_IMPORTED_MODULE_3__["default"].div({
-  gridColumn: 'span 1'
-});
-const Aside = _emotion_styled__WEBPACK_IMPORTED_MODULE_3__["default"].div({
-  gridColumn: 'span 1'
-});
-const AppContainer = _emotion_styled__WEBPACK_IMPORTED_MODULE_3__["default"].div({
-  display: 'grid',
-  gridTemplateRows: '60px 1fr 60px',
-  height: '100%'
-});
-const AppHeader = _emotion_styled__WEBPACK_IMPORTED_MODULE_3__["default"].header({});
-const AppContent = _emotion_styled__WEBPACK_IMPORTED_MODULE_3__["default"].section({});
-const AppFooter = _emotion_styled__WEBPACK_IMPORTED_MODULE_3__["default"].footer({});
-function App() {
-  const dispatch = Object(react_redux__WEBPACK_IMPORTED_MODULE_2__["useDispatch"])();
-  Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(() => {
-    dispatch(Object(_slice__WEBPACK_IMPORTED_MODULE_6__["loadFoodData"])());
-  });
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(GridLayout, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Aside, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null)), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Section, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(AppContainer, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(AppHeader, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h2", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_1__["Link"], {
-    to: "/"
-  }, "\uC624\uB298 \uBB50 \uBA39\uC9C0?!"))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(AppContent, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_1__["Switch"], null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_1__["Route"], {
-    exact: true,
-    path: "/",
-    component: _HomePage__WEBPACK_IMPORTED_MODULE_4__["default"]
-  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_1__["Route"], {
-    exact: true,
-    path: "/food",
-    component: _FoodPage__WEBPACK_IMPORTED_MODULE_5__["default"]
-  }))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(AppFooter, null))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(Aside, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null)));
-}
+const categories = [{
+  id: 1,
+  category: '한식'
+}, {
+  id: 2,
+  category: '중식'
+}, {
+  id: 3,
+  category: '일식'
+}, {
+  id: 4,
+  category: '양식'
+}, {
+  id: 5,
+  category: '태국식'
+}, {
+  id: 6,
+  category: '베트남식'
+}, {
+  id: 7,
+  category: '패스트푸드'
+}, {
+  id: 8,
+  category: '분식'
+}];
+/* harmony default export */ __webpack_exports__["default"] = (categories);
 
 /***/ }),
 /* 71 */
@@ -38144,7 +38494,105 @@ function App() {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _emotion_styled_base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(72);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return App; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(13);
+/* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(33);
+/* harmony import */ var _emotion_styled__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(72);
+/* harmony import */ var _HomePage__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(89);
+/* harmony import */ var _MenuPage__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(91);
+/* harmony import */ var _MenusPage__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(92);
+/* harmony import */ var _slice__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(67);
+
+
+
+
+
+
+
+
+const GridLayout = _emotion_styled__WEBPACK_IMPORTED_MODULE_3__["default"].div`
+  height: 100%;
+  display: grid;
+  grid-template-areas: 
+    "nav-l header nav-r"
+    "nav-l article nav-r"
+    "nav-l footer nav-r";
+  grid-template-rows: 80px 1fr 100px;  
+  grid-template-columns: 20% 1fr 20%;
+  margin: 0;
+  color: #eee;
+  background-image: url(./public/images/bg1_8x.jpg);
+  background-position: center;
+  background-size: cover;
+  overflow-y: auto;
+  & > header, footer, article, nav, div {
+    padding: 1.2em;
+    background: fff0;
+  }
+  @media all and (max-width: 767px) {
+    grid-template-areas: 
+      "header"
+      "article"
+      "footer";
+    grid-template-rows: 80px 1fr 80px;  
+    grid-template-columns: 1fr;
+    height: 100vh;
+    & > nav { 
+      display: none;
+    }
+  }
+`;
+const AppHeader = _emotion_styled__WEBPACK_IMPORTED_MODULE_3__["default"].header`
+  grid-area: header;
+  & > h3 {
+    margin: .2em;
+  }
+`;
+const AppFooter = _emotion_styled__WEBPACK_IMPORTED_MODULE_3__["default"].footer`
+  grid-area: footer;
+`;
+const AppLeftNavigator = _emotion_styled__WEBPACK_IMPORTED_MODULE_3__["default"].nav`
+  grid-area: nav-l;
+`;
+const AppRightNavigator = _emotion_styled__WEBPACK_IMPORTED_MODULE_3__["default"].nav`
+  grid-area: nav-r;
+`;
+const AppArticle = _emotion_styled__WEBPACK_IMPORTED_MODULE_3__["default"].article`
+  grid-area: article;
+  background-color: #ffffff0f;
+`;
+function App() {
+  const dispatch = Object(react_redux__WEBPACK_IMPORTED_MODULE_2__["useDispatch"])();
+  Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(() => {
+    dispatch(Object(_slice__WEBPACK_IMPORTED_MODULE_7__["loadFoodData"])());
+    dispatch(Object(_slice__WEBPACK_IMPORTED_MODULE_7__["loadCategoryData"])());
+  });
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(GridLayout, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(AppHeader, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h3", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_1__["Link"], {
+    to: "/"
+  }, "\uC624\uB298 \uBB50 \uBA39\uC9C0?!"))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(AppLeftNavigator, null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(AppRightNavigator, null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(AppArticle, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_1__["Switch"], null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_1__["Route"], {
+    exact: true,
+    path: "/",
+    component: _HomePage__WEBPACK_IMPORTED_MODULE_4__["default"]
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_1__["Route"], {
+    exact: true,
+    path: "/menu",
+    component: _MenuPage__WEBPACK_IMPORTED_MODULE_5__["default"]
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_1__["Route"], {
+    exact: true,
+    path: "/menus",
+    component: _MenusPage__WEBPACK_IMPORTED_MODULE_6__["default"]
+  }))), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(AppFooter, null));
+}
+
+/***/ }),
+/* 72 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _emotion_styled_base__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(73);
 
 
 var tags = ['a', 'abbr', 'address', 'area', 'article', 'aside', 'audio', 'b', 'base', 'bdi', 'bdo', 'big', 'blockquote', 'body', 'br', 'button', 'canvas', 'caption', 'cite', 'code', 'col', 'colgroup', 'data', 'datalist', 'dd', 'del', 'details', 'dfn', 'dialog', 'div', 'dl', 'dt', 'em', 'embed', 'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'header', 'hgroup', 'hr', 'html', 'i', 'iframe', 'img', 'input', 'ins', 'kbd', 'keygen', 'label', 'legend', 'li', 'link', 'main', 'map', 'mark', 'marquee', 'menu', 'menuitem', 'meta', 'meter', 'nav', 'noscript', 'object', 'ol', 'optgroup', 'option', 'output', 'p', 'param', 'picture', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'script', 'section', 'select', 'small', 'source', 'span', 'strong', 'style', 'sub', 'summary', 'sup', 'table', 'tbody', 'td', 'textarea', 'tfoot', 'th', 'thead', 'time', 'title', 'tr', 'track', 'u', 'ul', 'var', 'video', 'wbr', // SVG
@@ -38159,19 +38607,19 @@ tags.forEach(function (tagName) {
 
 
 /***/ }),
-/* 72 */
+/* 73 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(73);
+/* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(74);
 /* harmony import */ var _babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_defineProperty__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _emotion_is_prop_valid__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(74);
-/* harmony import */ var _emotion_core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(76);
-/* harmony import */ var _emotion_utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(83);
-/* harmony import */ var _emotion_serialize__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(84);
+/* harmony import */ var _emotion_is_prop_valid__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(75);
+/* harmony import */ var _emotion_core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(77);
+/* harmony import */ var _emotion_utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(84);
+/* harmony import */ var _emotion_serialize__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(85);
 
 
 
@@ -38339,7 +38787,7 @@ var createStyled = function createStyled(tag, options) {
 
 
 /***/ }),
-/* 73 */
+/* 74 */
 /***/ (function(module, exports) {
 
 function _defineProperty(obj, key, value) {
@@ -38360,12 +38808,12 @@ function _defineProperty(obj, key, value) {
 module.exports = _defineProperty;
 
 /***/ }),
-/* 74 */
+/* 75 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _emotion_memoize__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(75);
+/* harmony import */ var _emotion_memoize__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(76);
 
 
 var reactPropsRegex = /^((children|dangerouslySetInnerHTML|key|ref|autoFocus|defaultValue|defaultChecked|innerHTML|suppressContentEditableWarning|suppressHydrationWarning|valueLink|accept|acceptCharset|accessKey|action|allow|allowUserMedia|allowPaymentRequest|allowFullScreen|allowTransparency|alt|async|autoComplete|autoPlay|capture|cellPadding|cellSpacing|challenge|charSet|checked|cite|classID|className|cols|colSpan|content|contentEditable|contextMenu|controls|controlsList|coords|crossOrigin|data|dateTime|decoding|default|defer|dir|disabled|disablePictureInPicture|download|draggable|encType|form|formAction|formEncType|formMethod|formNoValidate|formTarget|frameBorder|headers|height|hidden|high|href|hrefLang|htmlFor|httpEquiv|id|inputMode|integrity|is|keyParams|keyType|kind|label|lang|list|loading|loop|low|marginHeight|marginWidth|max|maxLength|media|mediaGroup|method|min|minLength|multiple|muted|name|nonce|noValidate|open|optimum|pattern|placeholder|playsInline|poster|preload|profile|radioGroup|readOnly|referrerPolicy|rel|required|reversed|role|rows|rowSpan|sandbox|scope|scoped|scrolling|seamless|selected|shape|size|sizes|slot|span|spellCheck|src|srcDoc|srcLang|srcSet|start|step|style|summary|tabIndex|target|title|type|useMap|value|width|wmode|wrap|about|datatype|inlist|prefix|property|resource|typeof|vocab|autoCapitalize|autoCorrect|autoSave|color|inert|itemProp|itemScope|itemType|itemID|itemRef|on|results|security|unselectable|accentHeight|accumulate|additive|alignmentBaseline|allowReorder|alphabetic|amplitude|arabicForm|ascent|attributeName|attributeType|autoReverse|azimuth|baseFrequency|baselineShift|baseProfile|bbox|begin|bias|by|calcMode|capHeight|clip|clipPathUnits|clipPath|clipRule|colorInterpolation|colorInterpolationFilters|colorProfile|colorRendering|contentScriptType|contentStyleType|cursor|cx|cy|d|decelerate|descent|diffuseConstant|direction|display|divisor|dominantBaseline|dur|dx|dy|edgeMode|elevation|enableBackground|end|exponent|externalResourcesRequired|fill|fillOpacity|fillRule|filter|filterRes|filterUnits|floodColor|floodOpacity|focusable|fontFamily|fontSize|fontSizeAdjust|fontStretch|fontStyle|fontVariant|fontWeight|format|from|fr|fx|fy|g1|g2|glyphName|glyphOrientationHorizontal|glyphOrientationVertical|glyphRef|gradientTransform|gradientUnits|hanging|horizAdvX|horizOriginX|ideographic|imageRendering|in|in2|intercept|k|k1|k2|k3|k4|kernelMatrix|kernelUnitLength|kerning|keyPoints|keySplines|keyTimes|lengthAdjust|letterSpacing|lightingColor|limitingConeAngle|local|markerEnd|markerMid|markerStart|markerHeight|markerUnits|markerWidth|mask|maskContentUnits|maskUnits|mathematical|mode|numOctaves|offset|opacity|operator|order|orient|orientation|origin|overflow|overlinePosition|overlineThickness|panose1|paintOrder|pathLength|patternContentUnits|patternTransform|patternUnits|pointerEvents|points|pointsAtX|pointsAtY|pointsAtZ|preserveAlpha|preserveAspectRatio|primitiveUnits|r|radius|refX|refY|renderingIntent|repeatCount|repeatDur|requiredExtensions|requiredFeatures|restart|result|rotate|rx|ry|scale|seed|shapeRendering|slope|spacing|specularConstant|specularExponent|speed|spreadMethod|startOffset|stdDeviation|stemh|stemv|stitchTiles|stopColor|stopOpacity|strikethroughPosition|strikethroughThickness|string|stroke|strokeDasharray|strokeDashoffset|strokeLinecap|strokeLinejoin|strokeMiterlimit|strokeOpacity|strokeWidth|surfaceScale|systemLanguage|tableValues|targetX|targetY|textAnchor|textDecoration|textRendering|textLength|to|transform|u1|u2|underlinePosition|underlineThickness|unicode|unicodeBidi|unicodeRange|unitsPerEm|vAlphabetic|vHanging|vIdeographic|vMathematical|values|vectorEffect|version|vertAdvY|vertOriginX|vertOriginY|viewBox|viewTarget|visibility|widths|wordSpacing|writingMode|x|xHeight|x1|x2|xChannelSelector|xlinkActuate|xlinkArcrole|xlinkHref|xlinkRole|xlinkShow|xlinkTitle|xlinkType|xmlBase|xmlns|xmlnsXlink|xmlLang|xmlSpace|y|y1|y2|yChannelSelector|z|zoomAndPan|for|class|autofocus)|(([Dd][Aa][Tt][Aa]|[Aa][Rr][Ii][Aa]|x)-.*))$/; // https://esbench.com/bench/5bfee68a4cd7e6009ef61d23
@@ -38384,7 +38832,7 @@ var index = Object(_emotion_memoize__WEBPACK_IMPORTED_MODULE_0__["default"])(fun
 
 
 /***/ }),
-/* 75 */
+/* 76 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -38401,7 +38849,7 @@ function memoize(fn) {
 
 
 /***/ }),
-/* 76 */
+/* 77 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -38414,18 +38862,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_helpers_esm_inheritsLoose__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(15);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _emotion_cache__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(77);
-/* harmony import */ var _emotion_element_57a3a7a3_browser_esm_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(81);
+/* harmony import */ var _emotion_cache__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(78);
+/* harmony import */ var _emotion_element_57a3a7a3_browser_esm_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(82);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CacheProvider", function() { return _emotion_element_57a3a7a3_browser_esm_js__WEBPACK_IMPORTED_MODULE_3__["C"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ThemeContext", function() { return _emotion_element_57a3a7a3_browser_esm_js__WEBPACK_IMPORTED_MODULE_3__["T"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "withEmotionCache", function() { return _emotion_element_57a3a7a3_browser_esm_js__WEBPACK_IMPORTED_MODULE_3__["w"]; });
 
-/* harmony import */ var _emotion_utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(83);
-/* harmony import */ var _emotion_serialize__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(84);
-/* harmony import */ var _emotion_sheet__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(78);
-/* harmony import */ var _emotion_css__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(87);
+/* harmony import */ var _emotion_utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(84);
+/* harmony import */ var _emotion_serialize__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(85);
+/* harmony import */ var _emotion_sheet__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(79);
+/* harmony import */ var _emotion_css__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(88);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "css", function() { return _emotion_css__WEBPACK_IMPORTED_MODULE_7__["default"]; });
 
 
@@ -38678,14 +39126,14 @@ var ClassNames = Object(_emotion_element_57a3a7a3_browser_esm_js__WEBPACK_IMPORT
 
 
 /***/ }),
-/* 77 */
+/* 78 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _emotion_sheet__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(78);
-/* harmony import */ var _emotion_stylis__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(79);
-/* harmony import */ var _emotion_weak_memoize__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(80);
+/* harmony import */ var _emotion_sheet__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(79);
+/* harmony import */ var _emotion_stylis__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(80);
+/* harmony import */ var _emotion_weak_memoize__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(81);
 
 
 
@@ -38899,7 +39347,7 @@ var createCache = function createCache(options) {
 
 
 /***/ }),
-/* 78 */
+/* 79 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -39043,7 +39491,7 @@ function () {
 
 
 /***/ }),
-/* 79 */
+/* 80 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -39666,7 +40114,7 @@ function stylis_min (W) {
 
 
 /***/ }),
-/* 80 */
+/* 81 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -39690,7 +40138,7 @@ var weakMemoize = function weakMemoize(func) {
 
 
 /***/ }),
-/* 81 */
+/* 82 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -39701,13 +40149,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return createEmotionProps; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "h", function() { return hasOwnProperty; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "w", function() { return withEmotionCache; });
-/* harmony import */ var _babel_runtime_helpers_inheritsLoose__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(82);
+/* harmony import */ var _babel_runtime_helpers_inheritsLoose__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(83);
 /* harmony import */ var _babel_runtime_helpers_inheritsLoose__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_inheritsLoose__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _emotion_cache__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(77);
-/* harmony import */ var _emotion_utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(83);
-/* harmony import */ var _emotion_serialize__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(84);
+/* harmony import */ var _emotion_cache__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(78);
+/* harmony import */ var _emotion_utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(84);
+/* harmony import */ var _emotion_serialize__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(85);
 
 
 
@@ -39847,7 +40295,7 @@ if (true) {
 
 
 /***/ }),
-/* 82 */
+/* 83 */
 /***/ (function(module, exports) {
 
 function _inheritsLoose(subClass, superClass) {
@@ -39859,7 +40307,7 @@ function _inheritsLoose(subClass, superClass) {
 module.exports = _inheritsLoose;
 
 /***/ }),
-/* 83 */
+/* 84 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -39909,15 +40357,15 @@ var insertStyles = function insertStyles(cache, serialized, isStringTag) {
 
 
 /***/ }),
-/* 84 */
+/* 85 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "serializeStyles", function() { return serializeStyles; });
-/* harmony import */ var _emotion_hash__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(85);
-/* harmony import */ var _emotion_unitless__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(86);
-/* harmony import */ var _emotion_memoize__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(75);
+/* harmony import */ var _emotion_hash__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(86);
+/* harmony import */ var _emotion_unitless__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(87);
+/* harmony import */ var _emotion_memoize__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(76);
 
 
 
@@ -40243,7 +40691,7 @@ var serializeStyles = function serializeStyles(args, registered, mergedProps) {
 
 
 /***/ }),
-/* 85 */
+/* 86 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -40306,7 +40754,7 @@ function murmur2(str) {
 
 
 /***/ }),
-/* 86 */
+/* 87 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -40364,12 +40812,12 @@ var unitlessKeys = {
 
 
 /***/ }),
-/* 87 */
+/* 88 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _emotion_serialize__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(84);
+/* harmony import */ var _emotion_serialize__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(85);
 
 
 function css() {
@@ -40384,7 +40832,7 @@ function css() {
 
 
 /***/ }),
-/* 88 */
+/* 89 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -40394,34 +40842,93 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(13);
 /* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(33);
-/* harmony import */ var _slice__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(67);
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(89);
+/* harmony import */ var _emotion_styled__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(72);
+/* harmony import */ var _slice__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(67);
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(90);
 
 
 
 
 
+
+const HomeSection = _emotion_styled__WEBPACK_IMPORTED_MODULE_3__["default"].section`
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+const HomeContent = _emotion_styled__WEBPACK_IMPORTED_MODULE_3__["default"].div`
+  display: flex;
+  flex-flow: column wrap;
+  align-items: center;
+  & > h1 {
+    margin: 0 0 10px;
+    font-size: 48px;
+    animation: animateleft 0.4s;
+    @media all and (max-width: 767px) {
+      font-size: 36px;
+    }
+  };
+  & > hr {
+    margin: auto;
+    width: 66%;
+    border: 0;
+    border-top: 2px solid #eee;
+  };
+  & > button {
+    color: #eee;
+    font-size: 18px;
+    height: 48px;
+    width: 180px;
+    line-height: 48px;
+    margin: 25px 25px;
+    text-align: center;
+    border: 1px solid #eee;
+    transition: all 0.3s ease 0s;
+    background: #fff0;
+    margin: 1em 0 0;
+    &:hover {
+      background: #428BCA;
+      cursor: pointer;
+    };
+  };
+  & > a {
+    text-align: center;
+    font-size: 18px;
+    margin: 1em 0 0;
+    cursor: pointer;
+    &:hover {
+      text-decoration-line: underline;
+    };
+  };
+`;
 function HomePage() {
   const history = Object(react_router_dom__WEBPACK_IMPORTED_MODULE_1__["useHistory"])();
   const dispatch = Object(react_redux__WEBPACK_IMPORTED_MODULE_2__["useDispatch"])();
-  const foods = Object(react_redux__WEBPACK_IMPORTED_MODULE_2__["useSelector"])(Object(_utils__WEBPACK_IMPORTED_MODULE_4__["get"])('foods'));
+  const foods = Object(react_redux__WEBPACK_IMPORTED_MODULE_2__["useSelector"])(Object(_utils__WEBPACK_IMPORTED_MODULE_5__["get"])('foods'));
 
-  function handleClick() {
-    const foodId = Object(_utils__WEBPACK_IMPORTED_MODULE_4__["getRandomNumber"])(foods.length);
-    const selectedFood = foods.find(food => food.id === foodId);
-    dispatch(Object(_slice__WEBPACK_IMPORTED_MODULE_3__["setFood"])(selectedFood));
-    const url = '/food';
-    history.push(url);
+  function handleMenuPickerClick() {
+    const index = Object(_utils__WEBPACK_IMPORTED_MODULE_5__["getRandomNumber"])(foods.length);
+    const selectedFood = foods.find(food => food.id === foods[index].id);
+    dispatch(Object(_slice__WEBPACK_IMPORTED_MODULE_4__["setFood"])(selectedFood));
+    history.push('/menu');
   }
 
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", null, "\uC624\uB298 \uBB50 \uBA39\uC9C0?!"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, "\uBB34\uC5C7\uC744 \uBA39\uC744\uC9C0 \uACE0\uBBFC\uC774\uB77C\uBA74,"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, "\uC624\uB298 \uD55C \uB07C \uC5EC\uAE30\uC5D0 \uB9E1\uACA8\uB77C!"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+  function handleMenuListClick() {
+    history.push('/menus');
+  }
+
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(HomeSection, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(HomeContent, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", null, "\uC624\uB298 \uBB50 \uBA39\uC9C0?!"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("hr", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
     type: "button",
-    onClick: handleClick
-  }, "\uBA54\uB274 \uBF51\uAE30"));
+    onClick: handleMenuPickerClick
+  }, "\uBA54\uB274 \uBF51\uAE30"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+    type: "button",
+    onClick: handleMenuListClick
+  }, "\uBA54\uB274\uD310 \uBCF4\uAE30")));
 }
 
 /***/ }),
-/* 89 */
+/* 90 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -40429,6 +40936,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "get", function() { return get; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "equal", function() { return equal; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getRandomNumber", function() { return getRandomNumber; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isEmpty", function() { return isEmpty; });
 function get(key) {
   return obj => obj[key];
 }
@@ -40441,42 +40949,314 @@ function getRandomNumber(length = 0) {
   const max = Math.floor(length);
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+function isEmpty(array = []) {
+  return array.length === 0;
+}
 
 /***/ }),
-/* 90 */
+/* 91 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return FoodPage; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return MenuPage; });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(33);
-/* harmony import */ var _slice__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(67);
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(89);
+/* harmony import */ var _emotion_styled__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(72);
+/* harmony import */ var _slice__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(67);
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(90);
 
 
 
 
-function FoodPage() {
+
+const MenuSection = _emotion_styled__WEBPACK_IMPORTED_MODULE_2__["default"].section`
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+const MenuGrid = _emotion_styled__WEBPACK_IMPORTED_MODULE_2__["default"].div`
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-areas: 
+      "pick dish"
+      "share share";
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 80px;
+  @media all and (max-width: 767px) {
+    grid-template-areas: 
+      "pick"
+      "share"
+      "dish";
+    grid-template-columns: 1fr 80px 1fr;
+    grid-template-rows: none;
+    grid-template-columns: none;
+  }
+`;
+const MenuPick = _emotion_styled__WEBPACK_IMPORTED_MODULE_2__["default"].div`
+  grid-area: pick;
+  display: flex;
+  flex-flow: column wrap;
+  justify-content: center;
+  & > h3 {
+    margin: 0 0 10px;
+    font-size: 24px;
+  }
+  & > hr {
+    margin: 0;
+    border: 0;
+    border-top: 2px solid #eee;
+    width: 90%;
+  }
+  & > p {
+    margin: 1em 0 0 0;
+  }
+`;
+const MenuDishes = _emotion_styled__WEBPACK_IMPORTED_MODULE_2__["default"].div`
+  grid-area: dish;
+`;
+const MenuButtons = _emotion_styled__WEBPACK_IMPORTED_MODULE_2__["default"].div`
+  grid-area: share;
+  text-align: center;
+  & > button {
+    height: 32px;
+    line-height: 32px;
+    color: #040404;
+    background: #ffffffa6;
+    border: 1px solid #000;
+    cursor: pointer;
+    &:hover {
+      background: #fff;
+      border: 1px solid #333;
+    };
+  }
+`;
+function MenuPage() {
   const dispatch = Object(react_redux__WEBPACK_IMPORTED_MODULE_1__["useDispatch"])();
-  const food = Object(react_redux__WEBPACK_IMPORTED_MODULE_1__["useSelector"])(Object(_utils__WEBPACK_IMPORTED_MODULE_3__["get"])('food'));
-  const foods = Object(react_redux__WEBPACK_IMPORTED_MODULE_1__["useSelector"])(Object(_utils__WEBPACK_IMPORTED_MODULE_3__["get"])('foods'));
+  const food = Object(react_redux__WEBPACK_IMPORTED_MODULE_1__["useSelector"])(Object(_utils__WEBPACK_IMPORTED_MODULE_4__["get"])('food'));
+  const foods = Object(react_redux__WEBPACK_IMPORTED_MODULE_1__["useSelector"])(Object(_utils__WEBPACK_IMPORTED_MODULE_4__["get"])('foods'));
 
   function handleClick() {
-    const foodId = Object(_utils__WEBPACK_IMPORTED_MODULE_3__["getRandomNumber"])(foods.length);
-    const selectedFood = foods.find(foodItem => foodItem.id === foodId);
-    dispatch(Object(_slice__WEBPACK_IMPORTED_MODULE_2__["setFood"])(selectedFood));
+    const index = Object(_utils__WEBPACK_IMPORTED_MODULE_4__["getRandomNumber"])(foods.length);
+    const selectedFood = foods.find(foodItem => foodItem.id === foods[index].id);
+    dispatch(Object(_slice__WEBPACK_IMPORTED_MODULE_3__["setFood"])(selectedFood));
   }
 
   if (!food) {
-    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, "\uC815\uC131\uAECF \uBA54\uB274 \uC120\uC815 \uC911...");
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(MenuSection, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, "\uC815\uC131\uAECF \uBA54\uB274 \uC120\uC815 \uC911..."));
   }
 
-  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h1", null, food.name), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, food.name, ' ', "\uC5B4\uB54C?"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, food.name, ' ', "\uC18C\uAC1C\uD558\uB294 \uAE00!"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(MenuSection, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(MenuGrid, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(MenuPick, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h3", null, food.name), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("hr", null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, "\uC624\uB298", ' ', food.name, ' ', "\uAC01 \uC774\uB2E4!")), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(MenuDishes, null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(MenuButtons, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
     type: "button",
     onClick: handleClick
-  }, "\uB2E4\uC2DC \uBF51\uAE30"));
+  }, "\uB2E4\uC2DC \uBF51\uAE30"))));
+}
+
+/***/ }),
+/* 92 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return MenusPage; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _emotion_styled__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(72);
+/* harmony import */ var _MenusContainer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(93);
+/* harmony import */ var _CategoriesContainer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(95);
+
+
+
+
+const MenusSection = _emotion_styled__WEBPACK_IMPORTED_MODULE_1__["default"].section`
+  height: 100%;
+  padding: 0 1em;
+  text-align: center;
+  color: #333;
+  background-color: #fefefe;
+  & ul {
+    padding: 0;
+    list-style: none;
+  }
+`;
+const MenusTitle = _emotion_styled__WEBPACK_IMPORTED_MODULE_1__["default"].div`
+  & h3 {
+    margin: 0 0 0.2em;
+    font-size: 36px;
+    font-weight: bold;
+    letter-spacing: .5em;
+  }
+  & .highlight {
+    color: #e91e63;
+    font-weight: 600;
+  }
+`;
+function MenusPage() {
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(MenusSection, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(MenusTitle, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("h3", null, "\uBA54\uB274\uD310"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
+    className: "highlight"
+  }, "\uBA39\uACE0\uC2F6\uC740 \uBA54\uB274"), "\uB97C \uD655\uC778\uD574\uBCF4\uC138\uC694!"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_CategoriesContainer__WEBPACK_IMPORTED_MODULE_3__["default"], null), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_MenusContainer__WEBPACK_IMPORTED_MODULE_2__["default"], null));
+} // function FormContainer() {
+//   return (
+//     <form>
+//       <input type="text" name="" id="" />
+//       <button type="button">
+//         <span role="img" aria-label="search">🔍</span>
+//       </button>
+//     </form>
+//   );
+// }
+
+/***/ }),
+/* 93 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return MenusContainer; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(33);
+/* harmony import */ var _emotion_styled__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(72);
+/* harmony import */ var _Menus__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(94);
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(90);
+
+
+
+
+
+const MenusWapper = _emotion_styled__WEBPACK_IMPORTED_MODULE_2__["default"].div`
+  display: grid;
+  grid-gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-auto-rows: 180px 180px;
+`;
+function MenusContainer() {
+  const menus = Object(react_redux__WEBPACK_IMPORTED_MODULE_1__["useSelector"])(Object(_utils__WEBPACK_IMPORTED_MODULE_4__["get"])('foods'));
+  const checkedCategories = Object(react_redux__WEBPACK_IMPORTED_MODULE_1__["useSelector"])(Object(_utils__WEBPACK_IMPORTED_MODULE_4__["get"])('checkedCategories'));
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(MenusWapper, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Menus__WEBPACK_IMPORTED_MODULE_3__["default"], {
+    menus: menus,
+    checkedCategories: checkedCategories
+  }));
+}
+
+/***/ }),
+/* 94 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Menus; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(90);
+
+
+function Menus({
+  menus = [],
+  checkedCategories = []
+}) {
+  if (!menus || Object(_utils__WEBPACK_IMPORTED_MODULE_1__["isEmpty"])(menus)) {
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("p", null, "\uB4F1\uB85D\uB41C \uBA54\uB274\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4!");
+  }
+
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, menus.map(({
+    id,
+    name,
+    category
+  }) => {
+    if (Object(_utils__WEBPACK_IMPORTED_MODULE_1__["isEmpty"])(checkedCategories) || checkedCategories.find(checkedCategory => checkedCategory.category === category)) {
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
+        key: id
+      }, name);
+    }
+
+    return null;
+  }));
+}
+
+/***/ }),
+/* 95 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return CategoriesContainer; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react_redux__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(33);
+/* harmony import */ var _Categories__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(96);
+/* harmony import */ var _slice__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(67);
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(90);
+
+
+
+
+
+function CategoriesContainer() {
+  const dispatch = Object(react_redux__WEBPACK_IMPORTED_MODULE_1__["useDispatch"])();
+  const categories = Object(react_redux__WEBPACK_IMPORTED_MODULE_1__["useSelector"])(Object(_utils__WEBPACK_IMPORTED_MODULE_4__["get"])('categories')) || [];
+  const checkedCategories = Object(react_redux__WEBPACK_IMPORTED_MODULE_1__["useSelector"])(Object(_utils__WEBPACK_IMPORTED_MODULE_4__["get"])('checkedCategories')) || [];
+
+  function handleClick(category) {
+    if (!category) {
+      dispatch(Object(_slice__WEBPACK_IMPORTED_MODULE_3__["clearCheckedCategories"])());
+      return;
+    }
+
+    dispatch(Object(_slice__WEBPACK_IMPORTED_MODULE_3__["setCheckedCategories"])(category));
+  }
+
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_Categories__WEBPACK_IMPORTED_MODULE_2__["default"], {
+    categories: categories,
+    checkedCategories: checkedCategories,
+    onClick: handleClick
+  });
+}
+
+/***/ }),
+/* 96 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Categories; });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _emotion_styled__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(72);
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(90);
+
+
+
+const MenuList = _emotion_styled__WEBPACK_IMPORTED_MODULE_1__["default"].ul`
+  display: flex;
+  & li {
+    flex: 1;
+    flex-basis: auto;
+  }
+`;
+function Categories({
+  categories = [],
+  checkedCategories = [],
+  onClick
+}) {
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(MenuList, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+    type: "button",
+    onClick: () => onClick()
+  }, "\uC804\uCCB4", Object(_utils__WEBPACK_IMPORTED_MODULE_2__["isEmpty"])(checkedCategories) ? '(V)' : null)), categories.map(({
+    id,
+    category
+  }) => /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("li", {
+    key: id
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
+    type: "button",
+    onClick: () => onClick({
+      id,
+      category
+    })
+  }, category, checkedCategories.find(checkedCategoriy => checkedCategoriy.id === id) ? '(V)' : null))));
 }
 
 /***/ })
