@@ -38523,7 +38523,7 @@ const GridLayout = _emotion_styled__WEBPACK_IMPORTED_MODULE_3__["default"].div`
   grid-template-columns: 20% 1fr 20%;
   margin: 0;
   color: #eee;
-  background-image: url(https://github.com/TaeWoongKim2/project-react-2-TaeWoongKim2/blob/main/public/images/bg1_8x.jpg?raw=true);
+  background-image: url(public/images/bg1_8x.jpg);
   background-position: center;
   background-size: cover;
   overflow-y: auto;
